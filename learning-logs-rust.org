@@ -1,0 +1,4 @@
+# Learning logs
+## Rust
+
+- When i included `rand = '0.6.1'` in `Cargo.toml` and run `cargo build`, the dependency that actually gets added is `rand 0.6.5` as per the lock file.
