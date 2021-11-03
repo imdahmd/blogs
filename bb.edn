@@ -1,0 +1,13 @@
+{:paths ["."]
+ :tasks {:requires ([site-generator]
+                    [babashka.fs :as fs])
+         clean {:task
+                (do
+                  (print "Removing everyting from site")
+                  (fs/delete-tree "generated-site")
+                  (println ": done"))}
+         generate-site {:task
+                        (do
+                          (print "Generating site")
+                          (site-generator/generate "generated-site")
+                          (println ": done"))}}}
