@@ -61,6 +61,5 @@
       (fs/copy ($p "skin/style.css") dest-dir {:replace-existing 't}))))
 
 (comment
-  (clean-site)
   (generate-site))
 
