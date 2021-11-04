@@ -1,4 +1,4 @@
-{:paths ["."]
+{:paths ["engine"]
  :tasks {:requires ([site-generator]
                     [babashka.fs :as fs])
          clean {:task
