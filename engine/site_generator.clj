@@ -7,9 +7,11 @@
 (pods/load-pod 'retrogradeorbit/bootleg "0.1.9")
 (require '[pod.retrogradeorbit.bootleg.markdown :as md])
 
-(defonce $ROOT_DIR "./")
-
 (defmacro $p [path] `(str $ROOT_DIR ~path))
+
+(defonce $ROOT_DIR "./")
+(defonce index-skin (slurp ($p "skin/index.html")))
+(defonce blog-skin (slurp ($p "skin/blog.html")))
 
 (defn- md->html [file]
   (let [md   (slurp file)
@@ -24,9 +26,8 @@
       string/capitalize))
 
 (defn- make-presentable [file]
-  (let [title     (filename->title (fs/file-name file))
-        body      (md->html file)
-        blog-skin (slurp ($p "skin/blog.html"))]
+  (let [title (filename->title (fs/file-name file))
+        body  (md->html file)]
     (selmer/render blog-skin
                    {:title title 
                     :body  body})))
@@ -41,6 +42,13 @@
            (spit html-file))
       html-file)))
 
+(defn- generate-index [html-files]
+  (let [list (->> html-files
+                  (map fs/file-name)
+                  (map #(str "<a href=\"" % "\">" (filename->title %) "</a><br/>"))
+                  string/join)]
+    (selmer/render index-skin {:list list})))
+
 (defn- ensure-dir [dir-path]
   (if (not (fs/exists? dir-path))
     (fs/create-dir dir-path)
@@ -50,16 +58,16 @@
   (let [blog-files (->> (fs/list-dir $ROOT_DIR)
                         (filter #(= "md" (fs/extension %)))
                         (map fs/file))
-        dest-dir   (ensure-dir ($p target))]
+        dest-dir   (ensure-dir ($p target))
+        html-files (map #(-> %
+                              generate-html
+                              (fs/move dest-dir {:replace-existing 't}))
+                         blog-files)]
     (do
 
-      (dorun (map #(-> %
-                       generate-html
-                       (fs/move dest-dir {:replace-existing 't}))
-                  blog-files))
+      (spit (str target "/index.html") (generate-index html-files))
 
       (fs/copy ($p "skin/style.css") dest-dir {:replace-existing 't}))))
 
 (comment
   (generate "generated-site"))
-
