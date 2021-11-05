@@ -2,7 +2,8 @@
   (:require [babashka.pods :as pods]
             [selmer.parser :as selmer]
             [clojure.string :as string]
-            [babashka.fs :as fs]))
+            [babashka.fs :as fs]
+            [file-helper-functions :as fhf]))
 
 (pods/load-pod 'retrogradeorbit/bootleg "0.1.9")
 (require '[pod.retrogradeorbit.bootleg.markdown :as md])
@@ -49,16 +50,9 @@
                   string/join)]
     (selmer/render index-skin {:list list})))
 
-(defn- ensure-dir [dir-path]
-  (if (not (fs/exists? dir-path))
-    (fs/create-dir dir-path)
-    dir-path))
-
 (defn generate [target]
-  (let [blog-files (->> (fs/list-dir $ROOT_DIR)
-                        (filter #(= "md" (fs/extension %)))
-                        (map fs/file))
-        dest-dir   (ensure-dir ($p target))
+  (let [blog-files (fhf/fetch-files ($p "published") "md")
+        dest-dir   (fhf/ensure-dir ($p target))
         html-files (map #(-> %
                               generate-html
                               (fs/move dest-dir {:replace-existing 't}))
