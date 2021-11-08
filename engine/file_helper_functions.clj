@@ -1,7 +1,7 @@
 (ns file-helper-functions
   (:require [babashka.fs :as fs]))
 
-(defn- ensure-dir [dir-path]
+(defn ensure-dir [dir-path]
   (if (not (fs/exists? dir-path))
     (fs/create-dir dir-path)
     dir-path))
@@ -10,4 +10,5 @@
   (if (fs/exists? source-dir)
     (->> (fs/list-dir source-dir)
          (filter #(= ext (fs/extension %)))
-         (map fs/file))))
+         (map fs/file))
+    '()))

@@ -37,11 +37,10 @@
   (let [html-file (-> blog-file
                       (#(string/replace (fs/file-name %) #"\.md" ".html"))
                       fs/file)]
-    (do
-      (->> blog-file
-           make-presentable
-           (spit html-file))
-      html-file)))
+    (->> blog-file
+         make-presentable
+         (spit html-file))
+    html-file))
 
 (defn- generate-index [html-files]
   (let [list (->> html-files
@@ -54,14 +53,11 @@
   (let [blog-files (fhf/fetch-files ($p "published") "md")
         dest-dir   (fhf/ensure-dir ($p target))
         html-files (map #(-> %
-                              generate-html
-                              (fs/move dest-dir {:replace-existing 't}))
-                         blog-files)]
-    (do
-
-      (spit (str target "/index.html") (generate-index html-files))
-
-      (fs/copy ($p "skin/style.css") dest-dir {:replace-existing 't}))))
+                             generate-html
+                             (fs/move dest-dir {:replace-existing 't}))
+                        blog-files)]
+    (spit (str target "/index.html") (generate-index html-files))
+    (fs/copy ($p "skin/style.css") dest-dir {:replace-existing 't})))
 
 (comment
   (generate "generated-site"))
