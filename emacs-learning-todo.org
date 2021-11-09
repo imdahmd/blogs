@@ -1,3 +1,0 @@
-* Learn emacs jira integration
-* Learn org mode basics
-* Learn projectile basics (relook at my question on /r/emacs)
