@@ -3,14 +3,11 @@
             [selmer.parser :as selmer]
             [clojure.string :as string]
             [babashka.fs :as fs]
-            [file-helper-functions :as fhf]))
+            [file-helper-functions :as fhf :refer [$p]]))
 
 (pods/load-pod 'retrogradeorbit/bootleg "0.1.9")
 (require '[pod.retrogradeorbit.bootleg.markdown :as md])
 
-(defmacro $p [path] `(str $ROOT_DIR ~path))
-
-(defonce $ROOT_DIR "./")
 (defonce index-skin (slurp ($p "skin/index.html")))
 (defonce blog-skin (slurp ($p "skin/blog.html")))
 
