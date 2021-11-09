@@ -3,7 +3,8 @@
             [selmer.parser :as selmer]
             [clojure.string :as string]
             [babashka.fs :as fs]
-            [file-helper-functions :as fhf :refer [$p]]))
+            [file-helper-functions :as fhf :refer [$p]]
+            [publisher]))
 
 (pods/load-pod 'retrogradeorbit/bootleg "0.1.9")
 (require '[pod.retrogradeorbit.bootleg.markdown :as md])
@@ -39,10 +40,17 @@
          (spit html-file))
     html-file))
 
+(defn- published-date [blog-file]
+  (-> (-> blog-file
+          publisher/metadata
+          :published-at)
+      (string/split #" ")
+      first))
+
 (defn- generate-index [html-files]
   (let [list (->> html-files
                   (map fs/file-name)
-                  (map #(str "<a href=\"" % "\">" (filename->title %) "</a><br/>"))
+                  (map #(str "<li>" "<a href=\"" % "\">" (filename->title %) "</a>" " - "  "<span class=\"date\">" (published-date %) "</span>" "</li>"))
                   string/join)]
     (selmer/render index-skin {:list list})))
 

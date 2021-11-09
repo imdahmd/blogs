@@ -9,13 +9,6 @@
     (fs/create-dir dir-path)
     dir-path))
 
-(defn ensure-file [file default]
-  (if (not (fs/exists? file))
-    (do
-      (spit file default)
-      (fs/file file))
-    (fs/file file)))
-
 (defn fetch-files [source-dir ext]
   (if (fs/exists? source-dir)
     (->> (fs/list-dir source-dir)
